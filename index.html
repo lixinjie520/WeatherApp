@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <!-- 引進css文件 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card">
+        <!-- 頭部搜尋區域 -->
+        <div class="search">
+            <!-- 搜尋框 -->
+            <input type="text" placeholder="enter city name" spellcheck="false">
+            <!-- 搜尋按鈕 -->
+            <button><img src="images/search.png"></button>
+        </div>
+        <!-- 使用者輸入錯誤的城市名稱 -->
+        <div class="error">
+            <p>Invalid city name</p>
+        </div>
+        <!-- 顯示天氣區域 -->
+        <div class="weather">
+            <!-- 天氣圖示 -->
+            <img src="images/clouds.png" class="weather-icon">
+            <!-- 氣溫 -->
+            <h1 class="temp">22°C</h1>
+            <!-- 城市 -->
+            <h2 class="city">taipei</h2>
+            <!-- 天氣細節 -->
+            <div class="details">
+                <!-- 濕度 -->
+                <div class="col">
+                    <img src="images/humidity.png">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <!-- 風速 -->
+                <div class="col">
+                    <img src="images/wind.png">
+                    <div>
+                        <p class="wind">12 km/h</p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const apiKey = "bf67762e3da7cc23b0d4605cdc37120e"
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q="
+
+        const searchBox = document.querySelector(".search input")
+        const searchBtn = document.querySelector(".search button")
+        const weatherIcon = document.querySelector(".weather-icon")
+
+        async function checkWeather(city) {
+            const response = await fetch(apiUrl + city + `&appid=${apiKey}`)
+                // 當使用者輸出錯誤的城市名稱時
+            if (response.status == 404) {
+                document.querySelector(".error").style.display = "block"
+                document.querySelector(".weather").style.display = "none"
+            } else {
+                var data = await response.json()
+                    // console.log(data);
+
+                document.querySelector(".city").innerHTML = data.name
+                document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C"
+                document.querySelector(".humidity").innerHTML = data.main.humidity + "%"
+                document.querySelector(".wind").innerHTML = data.wind.speed + " km/h"
+
+                // 判斷天氣的圖示
+                if (data.weather[0].main == "Clouds") {
+                    weatherIcon.src = "images/clouds.png"
+                } else if (data.weather[0].main == "Clear") {
+                    weatherIcon.src = "images/clear.png"
+                } else if (data.weather[0].main == "Rain") {
+                    weatherIcon.src = "images/rain.png"
+                } else if (data.weather[0].main == "Drizzle") {
+                    weatherIcon.src = "images/drizzle.png"
+                } else if (data.weather[0].main == "Mist") {
+                    weatherIcon.src = "images/mist.png"
+                }
+
+                document.querySelector(".weather").style.display = "block"
+                document.querySelector(".error").style.display = "none"
+            }
+
+
+        }
+        // 添加 button 鍵盤監聽事件
+        searchBtn.addEventListener("click", () => {
+            // call function,參數為使用者輸入的內容
+            checkWeather(searchBox.value)
+        })
+    </script>
+</body>
+
+</html>
